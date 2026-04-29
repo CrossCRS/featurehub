@@ -12,6 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Paramore.Brighter.Extensions.DependencyInjection" Version="10.4.1" />
+    <PackageReference Include="Paramore.Darker.AspNetCore" Version="4.1.1" />
+    <PackageReference Include="Paramore.Darker.Policies" Version="4.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FeatureHub.Domain\FeatureHub.Domain.csproj" />
   </ItemGroup>
 

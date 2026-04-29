@@ -1,3 +1,4 @@
+using FeatureHub.Application;
 using FeatureHub.Infrastructure;
 using FeatureHub.Infrastructure.Data;
 
@@ -12,6 +13,7 @@ public class Program
         // Add services to the container.
         builder.AddApiServices();
         builder.AddInfrastructureServices();
+        builder.AddApplicationServices();
 
         var app = builder.Build();
 
