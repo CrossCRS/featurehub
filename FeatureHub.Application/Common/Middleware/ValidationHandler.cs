@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using FeatureHub.Application.Common.Exceptions;
+using FluentValidation;
 using FluentValidation.Results;
 using Paramore.Brighter;
 
@@ -29,7 +30,7 @@ public class ValidationHandler<TRequest> : RequestHandlerAsync<TRequest> where T
 
         if (validationResults.Count > 0)
         {
-            throw new ValidationException(validationResults);
+            throw new ValidationAppException(validationResults);
         }
 
         return await base.HandleAsync(command, cancellationToken);

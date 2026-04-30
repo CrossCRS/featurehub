@@ -1,4 +1,5 @@
 ﻿using FeatureHub.Application.Auth.Commands.Login;
+using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces.Identity;
 using Moq;
 
@@ -24,7 +25,7 @@ public class LoginCommandTests
     }
 
     [Fact]
-    public async Task LoginCommandTests_ShouldThrowUnauthorizedAccessException_WithInvalidCredentials()
+    public async Task LoginCommandTests_ShouldThrowInvalidCredentialsException_WithInvalidCredentials()
     {
         _identityService.Setup(i => i.LoginAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync((string?)null);
@@ -32,6 +33,6 @@ public class LoginCommandTests
         var handler = new LoginCommandHandler(_identityService.Object);
         var command = new LoginCommand("invalidUser", "invalidPassword");
 
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => handler.HandleAsync(command));
+        await Assert.ThrowsAsync<InvalidCredentialsException>(() => handler.HandleAsync(command));
     }
 }

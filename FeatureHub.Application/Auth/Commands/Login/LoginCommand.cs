@@ -1,4 +1,5 @@
 ﻿using FeatureHub.Application.Common.Attributes;
+using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces.Identity;
 using Paramore.Brighter;
 
@@ -33,7 +34,7 @@ public class LoginCommandHandler : RequestHandlerAsync<LoginCommand>
         command.Token = await _identityService.LoginAsync(command.Username, command.Password);
 
         if (command.Token == null)
-            throw new UnauthorizedAccessException("Invalid username or password.");
+            throw new InvalidCredentialsException();
 
         return await base.HandleAsync(command, cancellationToken);
     }
