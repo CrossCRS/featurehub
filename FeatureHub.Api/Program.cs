@@ -30,6 +30,8 @@ public class Program
             });
         }
 
+        app.UseExceptionHandler();
+
         app.UseHttpsRedirection();
 
         app.UseAuthentication();

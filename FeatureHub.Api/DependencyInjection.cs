@@ -1,9 +1,14 @@
-﻿namespace FeatureHub.Api;
+﻿using FeatureHub.Api.Infrastructure;
+
+namespace FeatureHub.Api;
 
 public static class DependencyInjection
 {
     public static void AddApiServices(this IHostApplicationBuilder builder)
     {
+        builder.Services.AddProblemDetails();
+        builder.Services.AddExceptionHandler<AppExceptionHandler>();
+
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
 
