@@ -1,6 +1,32 @@
 @FeatureHub.Api_HostAddress = http://localhost:5246
 
-GET {{FeatureHub.Api_HostAddress}}/hello/
-Accept: application/json
+###
+# /api/auth/login endpoint for user authentication
+###
+# Invalid login attempt with incorrect password
+POST {{FeatureHub.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+{
+    "username": "demo",
+    "password": "invalid-password"
+}
+
+###
+# Invalid login attempt with empty username and password
+POST {{FeatureHub.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+{
+    "username": "",
+    "password": ""
+}
+
+###
+# Valid login attempt with correct credentials
+POST {{FeatureHub.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+{
+    "username": "administrator",
+    "password": "P@ssw0rd!"
+}
 
 ###

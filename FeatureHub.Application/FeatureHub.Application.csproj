@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Hello\**" />
+    <EmbeddedResource Remove="Hello\**" />
+    <None Remove="Hello\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="Paramore.Brighter.Extensions.DependencyInjection" Version="10.4.1" />
