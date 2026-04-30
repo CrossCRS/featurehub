@@ -12,13 +12,15 @@ public static class DependencyInjection
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
         builder.Services.AddBrighter()
-        .AutoFromAssemblies([Assembly.GetExecutingAssembly()]);
+            .AutoFromAssemblies([Assembly.GetExecutingAssembly()])
+            .ValidatePipelines()
+            .DescribePipelines();
 
         builder.Services.AddDarker(options =>
         {
             options.QueryProcessorLifetime = ServiceLifetime.Scoped;
         })
-        .AddHandlersFromAssemblies([Assembly.GetExecutingAssembly()])
-        .AddDefaultPolicies();
+            .AddHandlersFromAssemblies([Assembly.GetExecutingAssembly()])
+            .AddDefaultPolicies();
     }
 }

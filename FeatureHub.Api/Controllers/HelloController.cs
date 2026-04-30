@@ -1,4 +1,6 @@
+using FeatureHub.Application.Features.Hello.Queries;
 using Microsoft.AspNetCore.Mvc;
+using Paramore.Darker;
 
 namespace FeatureHub.Api.Controllers;
 
@@ -6,9 +8,22 @@ namespace FeatureHub.Api.Controllers;
 [Route("[controller]")]
 public class HelloController : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Index()
+    private readonly IQueryProcessor _queryProcessor;
+
+    public HelloController(IQueryProcessor queryProcessor)
     {
-        return Ok("Hello!");
+        _queryProcessor = queryProcessor;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Index()
+    {
+        var query = new GetHelloQuery();
+        var result = await _queryProcessor.ExecuteAsync(query);
+
+        if (result == null)
+            return NotFound();
+
+        return Ok(result);
     }
 }
