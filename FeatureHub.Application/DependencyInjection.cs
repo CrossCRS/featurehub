@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FeatureHub.Application.Common.Middleware;
+using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Paramore.Brighter.Extensions.DependencyInjection;
 using Paramore.Darker.AspNetCore;
@@ -11,6 +13,10 @@ public static class DependencyInjection
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
+        builder.Services.AddValidatorsFromAssemblies([Assembly.GetExecutingAssembly()]);
+
+        builder.Services.AddTransient(typeof(ValidationHandler<>));
+
         builder.Services.AddBrighter()
             .AutoFromAssemblies([Assembly.GetExecutingAssembly()])
             .ValidatePipelines()
