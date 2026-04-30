@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="FeatureHub.Api/FeatureHub.Api.csproj" />
+  <Project Path="FeatureHub.Application.Tests/FeatureHub.Application.Tests.csproj" Id="546f00fe-95e4-484a-9bc8-891393c9fe58" />
   <Project Path="FeatureHub.Application/FeatureHub.Application.csproj" />
   <Project Path="FeatureHub.Domain/FeatureHub.Domain.csproj" />
   <Project Path="FeatureHub.Infrastructure/FeatureHub.Infrastructure.csproj" />
