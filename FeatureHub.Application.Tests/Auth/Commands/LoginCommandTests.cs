@@ -1,6 +1,7 @@
 ﻿using FeatureHub.Application.Auth.Commands.Login;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces.Identity;
+using FeatureHub.Application.Common.Models.Identity;
 using Moq;
 
 namespace FeatureHub.Application.Tests.Auth.Commands;
@@ -13,7 +14,7 @@ public class LoginCommandTests
     public async Task LoginCommandTests_ShouldLogin_WithCorrectCredentials()
     {
         _identityService.Setup(i => i.LoginAsync("validUser", "validPassword"))
-            .ReturnsAsync("validToken");
+            .ReturnsAsync(new LoginResponse { AccessToken = "validToken", RefreshToken = "validRefreshToken" });
 
         var handler = new LoginCommandHandler(_identityService.Object);
         var command = new LoginCommand("validUser", "validPassword");
@@ -21,14 +22,15 @@ public class LoginCommandTests
         var result = await handler.HandleAsync(command);
 
         Assert.NotNull(result);
-        Assert.Equal("validToken", result.Token);
+        Assert.Equal("validToken", result.AccessToken);
+        Assert.Equal("validRefreshToken", result.RefreshToken);
     }
 
     [Fact]
     public async Task LoginCommandTests_ShouldThrowInvalidCredentialsException_WithInvalidCredentials()
     {
         _identityService.Setup(i => i.LoginAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync((string?)null);
+            .ReturnsAsync((LoginResponse?)null);
 
         var handler = new LoginCommandHandler(_identityService.Object);
         var command = new LoginCommand("invalidUser", "invalidPassword");

@@ -4,7 +4,7 @@ namespace FeatureHub.Application.Common.Exceptions;
 
 public class InvalidCredentialsException : AppException
 {
-    public InvalidCredentialsException() : base("Invalid username or password.", HttpStatusCode.Unauthorized)
+    public InvalidCredentialsException(string message = "Invalid username or password.") : base(message, HttpStatusCode.Unauthorized)
     {
     }
 }

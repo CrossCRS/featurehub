@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace FeatureHub.Infrastructure.Identity;
@@ -16,13 +17,13 @@ public class JwtTokenService : IJwtTokenService<ApplicationUser>
         _configuration = configuration;
     }
 
-    public string GenerateToken(ApplicationUser user, IEnumerable<string> roles)
+    public string GenerateAccessToken(ApplicationUser user, IEnumerable<string> roles)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["SecretKey"];
         var issuer = jwtSettings["Issuer"];
         var audience = jwtSettings["Audience"];
-        var expirationMinutes = jwtSettings.GetValue<int>("ExpirationMinutes", 60);
+        var expirationMinutes = jwtSettings.GetValue<int>("AccessTokenExpirationMinutes", 60);
 
         var key = Encoding.ASCII.GetBytes(secretKey);
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -52,5 +53,43 @@ public class JwtTokenService : IJwtTokenService<ApplicationUser>
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    public string GenerateRefreshToken()
+    {
+        var randomBytes = new byte[32];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(randomBytes);
+        return Convert.ToBase64String(randomBytes);
+    }
+
+    public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+    {
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var secretKey = jwtSettings["SecretKey"];
+        var issuer = jwtSettings["Issuer"];
+        var audience = jwtSettings["Audience"];
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = true,
+            ValidAudience = audience,
+            ValidateIssuer = true,
+            ValidIssuer = issuer,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)),
+            ValidateLifetime = false // Don't check token expiration
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        try
+        {
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out _);
+            return principal;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

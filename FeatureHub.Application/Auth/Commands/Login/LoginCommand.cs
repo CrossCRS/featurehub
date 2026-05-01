@@ -10,7 +10,8 @@ public class LoginCommand : Command
     public string Username { get; }
     public string Password { get; }
 
-    public string? Token { get; set; }
+    public string? AccessToken { get; set; }
+    public string? RefreshToken { get; set; }
 
     public LoginCommand(string username, string password) : base(Guid.NewGuid())
     {
@@ -31,10 +32,13 @@ public class LoginCommandHandler : RequestHandlerAsync<LoginCommand>
     [ValidateRequest(step: 1)]
     public override async Task<LoginCommand> HandleAsync(LoginCommand command, CancellationToken cancellationToken = default)
     {
-        command.Token = await _identityService.LoginAsync(command.Username, command.Password);
+        var loginResponse = await _identityService.LoginAsync(command.Username, command.Password);
 
-        if (command.Token == null)
+        if (loginResponse == null)
             throw new InvalidCredentialsException();
+
+        command.AccessToken = loginResponse.AccessToken;
+        command.RefreshToken = loginResponse.RefreshToken;
 
         return await base.HandleAsync(command, cancellationToken);
     }

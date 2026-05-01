@@ -1,4 +1,5 @@
 ﻿using FeatureHub.Application.Common.Interfaces.Identity;
+using FeatureHub.Application.Common.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace FeatureHub.Infrastructure.Identity;
@@ -14,7 +15,7 @@ public class IdentityService : IIdentityService
         _tokenService = tokenService;
     }
 
-    public async Task<string?> LoginAsync(string username, string password)
+    public async Task<LoginResponse?> LoginAsync(string username, string password)
     {
         var user = await _userManager.FindByNameAsync(username);
 
@@ -25,8 +26,39 @@ public class IdentityService : IIdentityService
             return null;
 
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _tokenService.GenerateToken(user, roles);
+        var accessToken = _tokenService.GenerateAccessToken(user, roles);
+        var refreshToken = _tokenService.GenerateRefreshToken();
 
-        return token;
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await _userManager.UpdateAsync(user);
+
+        return new LoginResponse { AccessToken = accessToken, RefreshToken = refreshToken };
+    }
+
+    public async Task<LoginResponse?> RefreshTokenAsync(string expiredAccessToken, string refreshToken)
+    {
+        var principal = _tokenService.GetPrincipalFromExpiredToken(expiredAccessToken);
+
+        if (principal == null || principal.Identity == null)
+            return null;
+
+        var user = _userManager.FindByNameAsync(principal.Identity.Name!).Result;
+
+        if (user == null)
+            return null;
+
+        if (user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            return null;
+
+        var roles = _userManager.GetRolesAsync(user).Result;
+        var newAccessToken = _tokenService.GenerateAccessToken(user, roles);
+        var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        await _userManager.UpdateAsync(user);
+
+        return new LoginResponse { AccessToken = newAccessToken, RefreshToken = newRefreshToken };
     }
 }

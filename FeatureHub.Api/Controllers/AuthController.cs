@@ -16,13 +16,12 @@ public class AuthController : ControllerBase
         _commandProcessor = commandProcessor;
     }
 
-    [Route("login")]
-    [HttpPost]
+    [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
         var command = new LoginCommand(loginRequest.Username, loginRequest.Password);
         await _commandProcessor.SendAsync(command);
 
-        return Ok(new { command.Token });
+        return Ok(new { command.AccessToken, command.RefreshToken });
     }
 }
