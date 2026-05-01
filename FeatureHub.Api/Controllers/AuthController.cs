@@ -1,5 +1,7 @@
 ﻿using FeatureHub.Api.Models.Auth;
 using FeatureHub.Application.Auth.Commands.Login;
+using FeatureHub.Application.Auth.Commands.RefreshToken;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
 
@@ -16,6 +18,7 @@ public class AuthController : ControllerBase
         _commandProcessor = commandProcessor;
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
@@ -23,5 +26,15 @@ public class AuthController : ControllerBase
         await _commandProcessor.SendAsync(command);
 
         return Ok(new { command.AccessToken, command.RefreshToken });
+    }
+
+    [AllowAnonymous]
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest refreshTokenRequest)
+    {
+        var command = new RefreshTokenCommand(refreshTokenRequest.ExpiredAccessToken, refreshTokenRequest.RefreshToken);
+        await _commandProcessor.SendAsync(command);
+
+        return Ok(new { command.NewAccessToken, command.NewRefreshToken });
     }
 }
