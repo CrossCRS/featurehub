@@ -15,7 +15,7 @@ public static class InitialiserExtensions
 
         var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
 
-        await initialiser.InitialiseAsync();
+        //await initialiser.InitialiseAsync();
         await initialiser.SeedAsync();
     }
 }
@@ -67,21 +67,21 @@ public class ApplicationDbContextInitialiser
         // Roles
         var administratorRole = new IdentityRole(Roles.Administrator);
 
-        if (_roleManager.Roles.All(r => r.Name != administratorRole.Name))
+        if (!_roleManager.Roles.Any(r => r.Name == administratorRole.Name))
         {
             await _roleManager.CreateAsync(administratorRole);
         }
 
         var userRole = new IdentityRole(Roles.User);
 
-        if (_roleManager.Roles.All(r => r.Name != userRole.Name))
+        if (!_roleManager.Roles.Any(r => r.Name == userRole.Name))
         {
             await _roleManager.CreateAsync(userRole);
         }
 
         var demoRole = new IdentityRole(Roles.Demo);
 
-        if (_roleManager.Roles.All(r => r.Name != demoRole.Name))
+        if (!_roleManager.Roles.Any(r => r.Name == demoRole.Name))
         {
             await _roleManager.CreateAsync(demoRole);
         }
@@ -89,7 +89,7 @@ public class ApplicationDbContextInitialiser
         // Users
         var administrator = new ApplicationUser { UserName = "administrator", Email = "administrator@localhost" };
 
-        if (_userManager.Users.All(u => u.UserName != administrator.UserName))
+        if (!_userManager.Users.Any(u => u.UserName == administrator.UserName))
         {
             await _userManager.CreateAsync(administrator, "P@ssw0rd!");
             if (!string.IsNullOrWhiteSpace(administratorRole.Name))
@@ -100,7 +100,7 @@ public class ApplicationDbContextInitialiser
 
         var user = new ApplicationUser { UserName = "user", Email = "user@localhost" };
 
-        if (_userManager.Users.All(u => u.UserName != user.UserName))
+        if (!_userManager.Users.Any(u => u.UserName == user.UserName))
         {
             await _userManager.CreateAsync(user, "P@ssw0rd!");
             if (!string.IsNullOrWhiteSpace(userRole.Name))
@@ -111,7 +111,7 @@ public class ApplicationDbContextInitialiser
 
         var demoUser = new ApplicationUser { UserName = "demo", Email = "demo@localhost" };
 
-        if (_userManager.Users.All(u => u.UserName != demoUser.UserName))
+        if (!_userManager.Users.Any(u => u.UserName == demoUser.UserName))
         {
             await _userManager.CreateAsync(demoUser, "P@ssw0rd!");
             if (!string.IsNullOrWhiteSpace(demoRole.Name))
