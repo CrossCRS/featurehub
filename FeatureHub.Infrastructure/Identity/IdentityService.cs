@@ -30,7 +30,7 @@ public class IdentityService : IIdentityService
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        user.RefreshTokenExpiryTime = DateTimeOffset.UtcNow.AddDays(7);
         await _userManager.UpdateAsync(user);
 
         return new LoginResponse { AccessToken = accessToken, RefreshToken = refreshToken };
@@ -48,7 +48,7 @@ public class IdentityService : IIdentityService
         if (user == null)
             return null;
 
-        if (user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        if (user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTimeOffset.UtcNow)
             return null;
 
         var roles = _userManager.GetRolesAsync(user).Result;
@@ -56,7 +56,7 @@ public class IdentityService : IIdentityService
         var newRefreshToken = _tokenService.GenerateRefreshToken();
 
         user.RefreshToken = newRefreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        user.RefreshTokenExpiryTime = DateTimeOffset.UtcNow.AddDays(7);
         await _userManager.UpdateAsync(user);
 
         return new LoginResponse { AccessToken = newAccessToken, RefreshToken = newRefreshToken };
