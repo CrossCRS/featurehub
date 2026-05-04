@@ -1,4 +1,5 @@
 ﻿using FeatureHub.Domain.Constants;
+using FeatureHub.Domain.Entities;
 using FeatureHub.Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -87,40 +88,40 @@ public class ApplicationDbContextInitialiser
         }
 
         // Users
-        var administrator = new ApplicationUser { UserName = "administrator", Email = "administrator@localhost" };
+        var administrator = _userManager.Users.FirstOrDefault(u => u.UserName == "administrator");
 
-        if (!_userManager.Users.Any(u => u.UserName == administrator.UserName))
+        if (administrator == null)
         {
+            administrator = new ApplicationUser { UserName = "administrator", Email = "administrator@localhost" };
             await _userManager.CreateAsync(administrator, "P@ssw0rd!");
-            if (!string.IsNullOrWhiteSpace(administratorRole.Name))
-            {
-                await _userManager.AddToRolesAsync(administrator, [administratorRole.Name]);
-            }
+            await _userManager.AddToRolesAsync(administrator, [Roles.Administrator]);
         }
 
-        var user = new ApplicationUser { UserName = "user", Email = "user@localhost" };
+        var user = _userManager.Users.FirstOrDefault(u => u.UserName == "user");
 
-        if (!_userManager.Users.Any(u => u.UserName == user.UserName))
+        if (user == null)
         {
+            user = new ApplicationUser { UserName = "user", Email = "user@localhost" };
             await _userManager.CreateAsync(user, "P@ssw0rd!");
-            if (!string.IsNullOrWhiteSpace(userRole.Name))
-            {
-                await _userManager.AddToRolesAsync(user, [userRole.Name]);
-            }
+            await _userManager.AddToRolesAsync(user, [Roles.User]);
         }
 
-        var demoUser = new ApplicationUser { UserName = "demo", Email = "demo@localhost" };
+        var demoUser = _userManager.Users.FirstOrDefault(u => u.UserName == "demo");
 
-        if (!_userManager.Users.Any(u => u.UserName == demoUser.UserName))
+        if (demoUser == null)
         {
+            demoUser = new ApplicationUser { UserName = "demo", Email = "demo@localhost" };
             await _userManager.CreateAsync(demoUser, "P@ssw0rd!");
-            if (!string.IsNullOrWhiteSpace(demoRole.Name))
-            {
-                await _userManager.AddToRolesAsync(demoUser, [demoRole.Name]);
-            }
+            await _userManager.AddToRolesAsync(demoUser, [Roles.Demo]);
         }
 
         // Data here, if necessary
+        if (!_context.Projects.Any())
+        {
+            _context.Projects.Add(new Project { Id = 1, OwnerId = administrator.Id, Name = "Admin Project 1" });
+            _context.Projects.Add(new Project { Id = 2, OwnerId = user.Id, Name = "User Project 1" });
+            _context.Projects.Add(new Project { Id = 3, OwnerId = demoUser.Id, Name = "Demo Project 1" });
+        }
 
         await _context.SaveChangesAsync();
     }

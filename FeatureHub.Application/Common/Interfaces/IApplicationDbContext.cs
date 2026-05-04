@@ -1,6 +1,9 @@
-﻿namespace FeatureHub.Application.Common.Interfaces;
+﻿using FeatureHub.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace FeatureHub.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
-    // Entity sets here...
+    DbSet<Project> Projects { get; }
 }
