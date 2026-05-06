@@ -1,4 +1,5 @@
 ﻿using FeatureHub.Api.Infrastructure;
+using FeatureHub.Api.Infrastructure.OpenApi;
 
 namespace FeatureHub.Api;
 
@@ -10,7 +11,10 @@ public static class DependencyInjection
         builder.Services.AddExceptionHandler<AppExceptionHandler>();
 
         builder.Services.AddControllers();
-        builder.Services.AddOpenApi();
+        builder.Services.AddOpenApi(options =>
+        {
+            options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+        });
 
         builder.Services.AddCors(options =>
         {
