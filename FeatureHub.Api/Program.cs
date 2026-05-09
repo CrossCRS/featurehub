@@ -32,7 +32,9 @@ public class Program
 
         app.UseExceptionHandler();
 
-        app.UseHttpsRedirection();
+        // Breaks custom headers (Authorization) on redirection
+        // TODO: Use only HTTPS
+        //app.UseHttpsRedirection();
 
         app.UseAuthentication();
         app.UseAuthorization();
