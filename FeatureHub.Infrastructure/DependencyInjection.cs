@@ -62,6 +62,7 @@ public static class DependencyInjection
 
         builder.Services.AddScoped<IJwtTokenService<ApplicationUser>, JwtTokenService>();
         builder.Services.AddScoped<IIdentityService, IdentityService>();
+        builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         builder.Services
             .AddIdentityCore<ApplicationUser>()
