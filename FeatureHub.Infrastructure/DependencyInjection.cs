@@ -19,7 +19,7 @@ public static class DependencyInjection
         builder.Services.AddDbContext<ApplicationDbContext>((options) =>
         {
             // TODO: MOVE!!
-            options.UseNpgsql("Server=127.0.0.1;Port=5432;Database=FeatureHub;Username=postgres;Password=P@ssw0rd!;");
+            options.UseNpgsql("Server=127.0.0.1;Port=5432;Database=FeatureHub;Username=postgres;Password=P@ssw0rd!;Include Error Detail=true;");
         });
 
         builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());

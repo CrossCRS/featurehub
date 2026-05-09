@@ -118,9 +118,9 @@ public class ApplicationDbContextInitialiser
         // Data here, if necessary
         if (!_context.Projects.Any())
         {
-            _context.Projects.Add(new Project { Id = 1, OwnerId = administrator.Id, Name = "Admin Project 1" });
-            _context.Projects.Add(new Project { Id = 2, OwnerId = user.Id, Name = "User Project 1" });
-            _context.Projects.Add(new Project { Id = 3, OwnerId = demoUser.Id, Name = "Demo Project 1" });
+            _context.Projects.Add(new Project { OwnerId = administrator.Id, Name = "Admin Project 1" });
+            _context.Projects.Add(new Project { OwnerId = user.Id, Name = "User Project 1" });
+            _context.Projects.Add(new Project { OwnerId = demoUser.Id, Name = "Demo Project 1" });
         }
 
         await _context.SaveChangesAsync();
