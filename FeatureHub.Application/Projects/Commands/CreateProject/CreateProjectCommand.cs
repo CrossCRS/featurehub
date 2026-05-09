@@ -30,6 +30,7 @@ public class CreateProjectCommandHandler : RequestHandlerAsync<CreateProjectComm
     [ValidateRequest(step: 1)]
     public override async Task<CreateProjectCommand> HandleAsync(CreateProjectCommand command, CancellationToken cancellationToken = default)
     {
+        // TODO: Add validation to check if the user is allowed to create a project (for example for demo user)
         var project = new Project
         {
             OwnerId = command.OwnerId,
