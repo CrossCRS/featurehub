@@ -1,9 +1,9 @@
-@FeatureHub.Api_HostAddress = http://localhost:5246
+@FeatureHub.Api_HostAddress = https://localhost:7156
 
 ###
 # /api/auth/login endpoint for user authentication
-###
-# Invalid login attempt with incorrect password
+
+### Invalid login attempt with incorrect password
 POST {{FeatureHub.Api_HostAddress}}/api/auth/login
 Content-Type: application/json
 {
@@ -11,8 +11,7 @@ Content-Type: application/json
     "password": "invalid-password"
 }
 
-###
-# Invalid login attempt with empty username and password
+### Invalid login attempt with empty username and password
 POST {{FeatureHub.Api_HostAddress}}/api/auth/login
 Content-Type: application/json
 {
@@ -20,8 +19,9 @@ Content-Type: application/json
     "password": ""
 }
 
-###
-# Valid login attempt with correct credentials
+### Valid login attempt with correct credentials
+# @name login
+
 POST {{FeatureHub.Api_HostAddress}}/api/auth/login
 Content-Type: application/json
 {
@@ -30,3 +30,13 @@ Content-Type: application/json
 }
 
 ###
+# /api/projects endpoint for retrieving a list of user's projects
+
+### Invalid request without authentication token
+
+GET {{FeatureHub.Api_HostAddress}}/api/projects
+
+### Valid request with authentication token
+
+GET {{FeatureHub.Api_HostAddress}}/api/projects
+Authorization: Bearer {{login.response.body.$.accessToken}}
