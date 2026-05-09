@@ -7,10 +7,12 @@ namespace FeatureHub.Api.Infrastructure;
 public class AppExceptionHandler : IExceptionHandler
 {
     private readonly IProblemDetailsService _problemDetailsService;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public AppExceptionHandler(IProblemDetailsService problemDetailsService)
+    public AppExceptionHandler(IProblemDetailsService problemDetailsService, IWebHostEnvironment webHostEnvironment)
     {
         _problemDetailsService = problemDetailsService;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
@@ -48,6 +50,21 @@ public class AppExceptionHandler : IExceptionHandler
                 Type = "https://tools.ietf.org/html/rfc9110#section-15.6.1"
             }
         };
+
+        // Add details if in development environment
+        if (_webHostEnvironment.IsDevelopment())
+        {
+            problemDetails.Extensions["exception"] = new
+            {
+                exception.Message,
+                exception.StackTrace,
+                InnerException = exception.InnerException != null ? new
+                {
+                    exception.InnerException.Message,
+                    exception.InnerException.StackTrace
+                } : null
+            };
+        }
 
         httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
 
