@@ -3,6 +3,7 @@ using FeatureHub.Application.Common.DTOs.Project;
 using FeatureHub.Application.Common.Interfaces.Identity;
 using FeatureHub.Application.Projects.Commands.CreateProject;
 using FeatureHub.Application.Projects.Commands.DeleteProject;
+using FeatureHub.Application.Projects.Queries.GetProjectById;
 using FeatureHub.Application.Projects.Queries.GetProjectsByOwner;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,15 @@ public class ProjectsController : ControllerBase
     {
         var userId = _currentUserService.GetUserId();
         var result = await _queryProcessor.ExecuteAsync(new GetProjectsByOwner(userId));
+
+        return result;
+    }
+
+    [HttpGet("{projectId:int}")]
+    public async Task<ProjectDto> GetProjectById([FromRoute] int projectId)
+    {
+        var userId = _currentUserService.GetUserId();
+        var result = await _queryProcessor.ExecuteAsync(new GetProjectById(userId, projectId));
 
         return result;
     }
