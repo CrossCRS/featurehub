@@ -1,4 +1,4 @@
-﻿namespace FeatureHub.Application.Projects.Queries.GetProjectsByOwner;
+﻿namespace FeatureHub.Application.Common.DTOs.Project;
 
 public class ProjectDto
 {

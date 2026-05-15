@@ -1,4 +1,5 @@
-﻿using FeatureHub.Application.Common.Interfaces;
+﻿using FeatureHub.Application.Common.DTOs.Project;
+using FeatureHub.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Darker;
 
