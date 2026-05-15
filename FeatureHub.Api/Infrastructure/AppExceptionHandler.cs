@@ -24,25 +24,34 @@ public class AppExceptionHandler : IExceptionHandler
                 Status = (int?)e.StatusCode,
                 Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1"
             },
-            //NotFoundException ne => (StatusCodes.Status404NotFound, new ProblemDetails
-            //{
-            //    Status = StatusCodes.Status404NotFound,
-            //    Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
-            //    Title = "The specified resource was not found.",
-            //    Detail = ne.Message
-            //}),
+            NotFoundException e => new ProblemDetails
+            {
+                Status = (int?)e.StatusCode,
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+                Title = "The specified resource was not found.",
+                Detail = e.Message
+            },
             InvalidCredentialsException e => new ProblemDetails
             {
                 Status = (int?)e.StatusCode,
-                Title = e.Message,
-                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.2"
+                Title = "Invalid credentials",
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.2",
+                Detail = e.Message
             },
-            //ForbiddenAccessException => (new ProblemDetails
-            //{
-            //    Status = StatusCodes.Status403Forbidden,
-            //    Title = "Forbidden",
-            //    Type = "https://tools.ietf.org/html/rfc9110#section-15.5.4"
-            //}),
+            UnauthorizedException e => new ProblemDetails
+            {
+                Status = (int?)e.StatusCode,
+                Title = "Unauthorized",
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.2",
+                Detail = e.Message
+            },
+            ForbiddenAccessException e => new ProblemDetails
+            {
+                Status = (int?)e.StatusCode,
+                Title = "Forbidden",
+                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.4",
+                Detail = e.Message
+            },
             _ => new ProblemDetails
             {
                 Status = StatusCodes.Status500InternalServerError,

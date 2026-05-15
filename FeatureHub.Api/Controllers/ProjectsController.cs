@@ -1,6 +1,7 @@
 ﻿using FeatureHub.Api.Models.Projects;
 using FeatureHub.Application.Common.Interfaces.Identity;
 using FeatureHub.Application.Projects.Commands.CreateProject;
+using FeatureHub.Application.Projects.Commands.DeleteProject;
 using FeatureHub.Application.Projects.Queries.GetProjectsByOwner;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +45,18 @@ public class ProjectsController : ControllerBase
         await _commandProcessor.SendAsync(command);
 
         // TODO: CreatedAt
+        return NoContent();
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteProject([FromQuery] int projectId)
+    {
+        var userId = _currentUserService.GetUserId();
+
+        var command = new DeleteProjectCommand(userId, projectId);
+
+        await _commandProcessor.SendAsync(command);
+
         return NoContent();
     }
 }
