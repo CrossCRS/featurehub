@@ -1,4 +1,5 @@
 ﻿using FeatureHub.Api.Models.Projects;
+using FeatureHub.Application.Common.DTOs.Project;
 using FeatureHub.Application.Common.Interfaces.Identity;
 using FeatureHub.Application.Projects.Commands.CreateProject;
 using FeatureHub.Application.Projects.Commands.DeleteProject;
@@ -48,8 +49,8 @@ public class ProjectsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteProject([FromQuery] int projectId)
+    [HttpDelete("{projectId:int}")] // Implicit int to make sure a valid openapi spec is generated
+    public async Task<IActionResult> DeleteProject([FromRoute] int projectId)
     {
         var userId = _currentUserService.GetUserId();
 
