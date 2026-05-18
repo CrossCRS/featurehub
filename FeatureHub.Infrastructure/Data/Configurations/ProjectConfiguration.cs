@@ -9,6 +9,9 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 {
     public void Configure(EntityTypeBuilder<Project> builder)
     {
+        // Exclude soft-deleted projects
+        builder.HasQueryFilter(p => !p.IsDeleted);
+
         builder.HasOne<ApplicationUser>()
             .WithMany()
             .HasForeignKey(p => p.OwnerId)

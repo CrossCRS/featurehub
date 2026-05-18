@@ -33,7 +33,7 @@ public class GetProjectByIdHandler : QueryHandlerAsync<GetProjectById, ProjectDt
     public override async Task<ProjectDto> ExecuteAsync(GetProjectById query, CancellationToken cancellationToken)
     {
         var project = await _context.Projects
-            .Where(p => p.Id == query.Id && !p.IsDeleted)
+            .Where(p => p.Id == query.Id)
             .AsNoTracking()
             .Select(p => new ProjectDto
             {

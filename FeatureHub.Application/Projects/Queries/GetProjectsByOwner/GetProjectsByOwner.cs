@@ -27,7 +27,7 @@ public class GetProjectsByOwnerHandler : QueryHandlerAsync<GetProjectsByOwner, I
     public override async Task<IEnumerable<ProjectDto>> ExecuteAsync(GetProjectsByOwner query, CancellationToken cancellationToken)
     {
         var projects = await _context.Projects
-            .Where(p => p.OwnerId == query.OwnerId && !p.IsDeleted)
+            .Where(p => p.OwnerId == query.OwnerId)
             .AsNoTracking()
             .Select(p => new ProjectDto
             {

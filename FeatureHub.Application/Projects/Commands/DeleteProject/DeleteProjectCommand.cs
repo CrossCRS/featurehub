@@ -31,7 +31,7 @@ public class DeleteProjectCommandHandler : RequestHandlerAsync<DeleteProjectComm
     [ValidateRequest(step: 1)]
     public override async Task<DeleteProjectCommand> HandleAsync(DeleteProjectCommand command, CancellationToken cancellationToken = default)
     {
-        var project = await _context.Projects.SingleOrDefaultAsync(p => p.Id == command.ProjectId && !p.IsDeleted, cancellationToken);
+        var project = await _context.Projects.SingleOrDefaultAsync(p => p.Id == command.ProjectId, cancellationToken);
 
         if (project == null)
         {
