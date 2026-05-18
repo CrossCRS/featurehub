@@ -9,4 +9,5 @@ public class Project : BaseAuditableEntity
     public bool IsDeleted { get; set; } = false;
 
     public required string OwnerId { get; set; }
+    public ICollection<Environment> Environments { get; set; } = [];
 }
