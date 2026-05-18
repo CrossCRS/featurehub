@@ -1,4 +1,5 @@
 using FeatureHub.Application.Common.Attributes;
+using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
 using FeatureHub.Domain.Entities;
@@ -34,7 +35,6 @@ public class DeleteEnvironmentCommandHandler : RequestHandlerAsync<DeleteEnviron
     public override async Task<DeleteEnvironmentCommand> HandleAsync(DeleteEnvironmentCommand command, CancellationToken cancellationToken = default)
     {
         var environment = await _context.Environments
-            .Include(e => e.Project)
             .SingleOrDefaultAsync(e => e.Id == command.EnvironmentId, cancellationToken);
 
         if (environment == null)
@@ -42,7 +42,7 @@ public class DeleteEnvironmentCommandHandler : RequestHandlerAsync<DeleteEnviron
             throw new NotFoundException(nameof(Domain.Entities.Environment), command.EnvironmentId);
         }
 
-        if (environment.Project!.OwnerId != command.UserId)
+        if (!await ProjectAuthorization.UserCanAccessProjectAsync(_context, environment.ProjectId, command.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have permission to delete this environment.");
         }
