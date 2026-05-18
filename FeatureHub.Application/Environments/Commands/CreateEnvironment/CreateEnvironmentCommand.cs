@@ -10,15 +10,13 @@ public class CreateEnvironmentCommand : Command
     public string UserId { get; }
     public int ProjectId { get; }
     public string Name { get; }
-    public string Token { get; }
     public int AddedEnvironmentId { get; set; }
 
-    public CreateEnvironmentCommand(string userId, int projectId, string name, string token) : base(Guid.NewGuid())
+    public CreateEnvironmentCommand(string userId, int projectId, string name) : base(Guid.NewGuid())
     {
         UserId = userId;
         ProjectId = projectId;
         Name = name;
-        Token = token;
     }
 }
 
@@ -43,7 +41,7 @@ public class CreateEnvironmentCommandHandler : RequestHandlerAsync<CreateEnviron
         {
             ProjectId = command.ProjectId,
             Name = command.Name,
-            Token = command.Token
+            Token = Guid.NewGuid().ToString("N")
         };
 
         _context.Environments.Add(environment);
