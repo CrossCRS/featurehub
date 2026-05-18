@@ -5,37 +5,34 @@ using FeatureHub.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Brighter;
 
-namespace FeatureHub.Application.Environments.Commands.UpdateEnvironment;
+namespace FeatureHub.Application.Environments.Commands.RegenerateEnvironmentToken;
 
-public class UpdateEnvironmentCommand : Command
+public class RegenerateEnvironmentTokenCommand : Command
 {
     public string UserId { get; }
     public int ProjectId { get; }
     public int EnvironmentId { get; }
-    public string? Name { get; }
-    public bool? IsActive { get; }
+    public string NewToken { get; set; } = string.Empty;
 
-    public UpdateEnvironmentCommand(string userId, int projectId, int environmentId, string? name, bool? isActive) : base(Guid.NewGuid())
+    public RegenerateEnvironmentTokenCommand(string userId, int projectId, int environmentId) : base(Guid.NewGuid())
     {
         UserId = userId;
         ProjectId = projectId;
         EnvironmentId = environmentId;
-        Name = name;
-        IsActive = isActive;
     }
 }
 
-public class UpdateEnvironmentCommandHandler : RequestHandlerAsync<UpdateEnvironmentCommand>
+public class RegenerateEnvironmentTokenCommandHandler : RequestHandlerAsync<RegenerateEnvironmentTokenCommand>
 {
     private readonly IApplicationDbContext _context;
 
-    public UpdateEnvironmentCommandHandler(IApplicationDbContext context)
+    public RegenerateEnvironmentTokenCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }
 
     [ValidateRequest(step: 1)]
-    public override async Task<UpdateEnvironmentCommand> HandleAsync(UpdateEnvironmentCommand command, CancellationToken cancellationToken = default)
+    public override async Task<RegenerateEnvironmentTokenCommand> HandleAsync(RegenerateEnvironmentTokenCommand command, CancellationToken cancellationToken = default)
     {
         var environment = await _context.Environments
             .SingleOrDefaultAsync(e => e.Id == command.EnvironmentId, cancellationToken);
@@ -47,18 +44,11 @@ public class UpdateEnvironmentCommandHandler : RequestHandlerAsync<UpdateEnviron
 
         if (!await ProjectAuthorization.UserCanModifyProjectAsync(_context, environment.ProjectId, command.UserId, cancellationToken))
         {
-            throw new ForbiddenAccessException("You do not have permission to update this environment.");
+            throw new ForbiddenAccessException("You do not have permission to refresh this environment's token.");
         }
 
-        if (!string.IsNullOrEmpty(command.Name))
-        {
-            environment.Name = command.Name;
-        }
-
-        if (command.IsActive.HasValue)
-        {
-            environment.IsActive = command.IsActive.Value;
-        }
+        environment.Token = Guid.NewGuid().ToString("N");
+        command.NewToken = environment.Token;
 
         await _context.SaveChangesAsync(cancellationToken);
 

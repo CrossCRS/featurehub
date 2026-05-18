@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace FeatureHub.Application.Environments.Commands.UpdateEnvironment;
+namespace FeatureHub.Application.Environments.Commands.RegenerateEnvironmentToken;
 
-public class UpdateEnvironmentCommandValidator : AbstractValidator<UpdateEnvironmentCommand>
+public class RegenerateEnvironmentTokenCommandValidator : AbstractValidator<RegenerateEnvironmentTokenCommand>
 {
-    public UpdateEnvironmentCommandValidator()
+    public RegenerateEnvironmentTokenCommandValidator()
     {
         RuleFor(x => x.UserId)
             .NotEmpty().WithMessage("User ID is required.")
@@ -13,7 +13,5 @@ public class UpdateEnvironmentCommandValidator : AbstractValidator<UpdateEnviron
             .GreaterThan(0).WithMessage("Project ID must be greater than 0.");
         RuleFor(x => x.EnvironmentId)
             .GreaterThan(0).WithMessage("Environment ID must be greater than 0.");
-        RuleFor(x => x.Name)
-            .MaximumLength(100).WithMessage("Environment name must not exceed 100 characters.");
     }
 }
