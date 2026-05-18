@@ -123,6 +123,13 @@ public class ApplicationDbContextInitialiser
             _context.Projects.Add(new Project { OwnerId = demoUser.Id, Name = "Demo Project 1" });
         }
 
+        var demoProject = _context.Projects.FirstOrDefault(p => p.Name == "Demo Project 1");
+
+        if (demoProject != null && !_context.Environments.Any(e => e.ProjectId == demoProject.Id))
+        {
+            _context.Environments.Add(new Domain.Entities.Environment { ProjectId = demoProject.Id, Name = "Demo Environment 1", Token = "123e4567e89b12d3a456426614174000" });
+        }
+
         await _context.SaveChangesAsync();
     }
 }

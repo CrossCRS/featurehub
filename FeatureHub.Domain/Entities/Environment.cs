@@ -2,11 +2,12 @@
 
 namespace FeatureHub.Domain.Entities;
 
-public class Project : BaseAuditableEntity
+public class Environment : BaseAuditableEntity
 {
     public required string Name { get; set; }
+    public required string Token { get; set; }
     public bool IsActive { get; set; } = true;
     public bool IsDeleted { get; set; } = false;
 
-    public required string OwnerId { get; set; }
+    public required int ProjectId { get; set; }
 }
