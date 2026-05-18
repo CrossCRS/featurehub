@@ -44,6 +44,8 @@ public class DeleteProjectCommandHandler : RequestHandlerAsync<DeleteProjectComm
         }
 
         project.IsDeleted = true;
+        project.UpdatedAt = DateTimeOffset.UtcNow;
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);
