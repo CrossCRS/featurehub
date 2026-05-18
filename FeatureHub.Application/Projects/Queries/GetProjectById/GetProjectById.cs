@@ -1,4 +1,5 @@
 ﻿using FeatureHub.Application.Common.Attributes;
+using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.DTOs.Project;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
@@ -51,10 +52,10 @@ public class GetProjectByIdHandler : QueryHandlerAsync<GetProjectById, ProjectDt
             throw new NotFoundException(nameof(Project), query.Id);
         }
 
-        if (project.OwnerId != query.UserId)
+        if (!await ProjectAuthorization.UserCanAccessProjectAsync(_context, query.Id, query.UserId, cancellationToken))
         {
             // TODO: Consider returning a 404 to avoid revealing the existence of the project?
-            throw new UnauthorizedException("You do not have access to this project.");
+            throw new ForbiddenAccessException("You do not have access to this project.");
         }
 
         return project;

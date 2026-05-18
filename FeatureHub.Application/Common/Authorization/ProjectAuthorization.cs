@@ -10,4 +10,11 @@ public static class ProjectAuthorization
         return await context.Projects
             .AnyAsync(p => p.Id == projectId && p.OwnerId == userId, cancellationToken);
     }
+
+    public static async Task<bool> UserCanModifyProjectAsync(IApplicationDbContext context, int projectId, string userId, CancellationToken cancellationToken = default)
+    {
+        // For now, only the project owner can modify the project.
+        // Could add permissions later.
+        return await UserCanAccessProjectAsync(context, projectId, userId, cancellationToken);
+    }
 }
