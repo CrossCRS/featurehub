@@ -2,7 +2,6 @@ using FeatureHub.Application.Common.Attributes;
 using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
-using FeatureHub.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Brighter;
 
@@ -42,7 +41,7 @@ public class DeleteEnvironmentCommandHandler : RequestHandlerAsync<DeleteEnviron
             throw new NotFoundException(nameof(Domain.Entities.Environment), command.EnvironmentId);
         }
 
-        if (!await ProjectAuthorization.UserCanAccessProjectAsync(_context, environment.ProjectId, command.UserId, cancellationToken))
+        if (!await ProjectAuthorization.UserCanModifyProjectAsync(_context, environment.ProjectId, command.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have permission to delete this environment.");
         }

@@ -1,4 +1,5 @@
 ﻿using FeatureHub.Application.Common.Attributes;
+using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
 using FeatureHub.Domain.Entities;
@@ -38,7 +39,7 @@ public class DeleteProjectCommandHandler : RequestHandlerAsync<DeleteProjectComm
             throw new NotFoundException(nameof(Project), command.ProjectId);
         }
 
-        if (project.OwnerId != command.UserId)
+        if (!await ProjectAuthorization.UserCanModifyProjectAsync(_context, command.ProjectId, command.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have permission to delete this project.");
         }

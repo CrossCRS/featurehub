@@ -1,6 +1,6 @@
 using FeatureHub.Application.Common.Attributes;
+using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.Interfaces;
-using FeatureHub.Domain.Entities;
 using Paramore.Brighter;
 
 namespace FeatureHub.Application.Environments.Commands.CreateEnvironment;
@@ -34,6 +34,11 @@ public class CreateEnvironmentCommandHandler : RequestHandlerAsync<CreateEnviron
     [ValidateRequest(step: 1)]
     public override async Task<CreateEnvironmentCommand> HandleAsync(CreateEnvironmentCommand command, CancellationToken cancellationToken = default)
     {
+        if (!await ProjectAuthorization.UserCanModifyProjectAsync(_context, command.ProjectId, command.UserId, cancellationToken))
+        {
+            throw new UnauthorizedAccessException("You do not have permission to modify this environment.");
+        }
+
         var environment = new Domain.Entities.Environment
         {
             ProjectId = command.ProjectId,
