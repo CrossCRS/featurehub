@@ -1,11 +1,11 @@
-﻿using FeatureHub.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace FeatureHub.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
-    DbSet<Project> Projects { get; }
+    DbSet<Domain.Entities.Project> Projects { get; }
+    DbSet<Domain.Entities.Environment> Environments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
