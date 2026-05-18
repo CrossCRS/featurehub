@@ -3,6 +3,7 @@ using FeatureHub.Application.Common.DTOs.Project;
 using FeatureHub.Application.Common.Interfaces.Identity;
 using FeatureHub.Application.Projects.Commands.CreateProject;
 using FeatureHub.Application.Projects.Commands.DeleteProject;
+using FeatureHub.Application.Projects.Commands.UpdateProject;
 using FeatureHub.Application.Projects.Queries.GetProjectById;
 using FeatureHub.Application.Projects.Queries.GetProjectsByOwner;
 using Microsoft.AspNetCore.Authorization;
@@ -56,6 +57,18 @@ public class ProjectsController : ControllerBase
         await _commandProcessor.SendAsync(command);
 
         // TODO: CreatedAt
+        return NoContent();
+    }
+
+    [HttpPatch("{projectId:int}")]
+    public async Task<IActionResult> UpdateProject([FromRoute] int projectId, [FromBody] UpdateProjectRequest request)
+    {
+        var userId = _currentUserService.GetUserId();
+
+        var command = new UpdateProjectCommand(userId, projectId, request.Name, request.IsActive);
+
+        await _commandProcessor.SendAsync(command);
+
         return NoContent();
     }
 
