@@ -1,6 +1,5 @@
 ﻿using FeatureHub.Application.Common.Interfaces;
 using FeatureHub.Domain.Common;
-using FeatureHub.Domain.Entities;
 using FeatureHub.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +9,8 @@ namespace FeatureHub.Infrastructure.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
-    public DbSet<Project> Projects => Set<Project>();
+    public DbSet<Domain.Entities.Project> Projects => Set<Domain.Entities.Project>();
+    public DbSet<Domain.Entities.Environment> Environments => Set<Domain.Entities.Environment>();
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
