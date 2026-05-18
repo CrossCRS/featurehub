@@ -5,6 +5,7 @@ using FeatureHub.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
@@ -16,10 +17,16 @@ public static class DependencyInjection
 {
     public static void AddInfrastructureServices(this IHostApplicationBuilder builder)
     {
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException("Database connection string 'DefaultConnection' is not configured.");
+        }
+
         builder.Services.AddDbContext<ApplicationDbContext>((options) =>
         {
-            // TODO: MOVE!!
-            options.UseNpgsql("Server=127.0.0.1;Port=5432;Database=FeatureHub;Username=postgres;Password=P@ssw0rd!;Include Error Detail=true;");
+            options.UseNpgsql(connectionString);
         });
 
         builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
@@ -33,7 +40,7 @@ public static class DependencyInjection
 
         if (string.IsNullOrEmpty(secretKey) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience))
         {
-            throw new InvalidOperationException("JWT settings are not properly configured in appsettings.json");
+            throw new InvalidOperationException("JWT settings are not properly configured.");
         }
 
         var key = Encoding.ASCII.GetBytes(secretKey);
