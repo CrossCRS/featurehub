@@ -10,4 +10,5 @@ public class Environment : BaseAuditableEntity
     public bool IsDeleted { get; set; } = false;
 
     public required int ProjectId { get; set; }
+    public Project? Project { get; set; }
 }

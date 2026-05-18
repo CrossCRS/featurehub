@@ -11,8 +11,8 @@ public class EnvironmentConfiguration : IEntityTypeConfiguration<Domain.Entities
         // Exclude soft-deleted environments
         builder.HasQueryFilter(e => !e.IsDeleted);
 
-        builder.HasOne<Project>()
-            .WithMany()
+        builder.HasOne(e => e.Project)
+            .WithMany(p => p.Environments)
             .HasForeignKey(e => e.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
 
