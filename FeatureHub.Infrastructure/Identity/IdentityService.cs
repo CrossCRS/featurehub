@@ -43,7 +43,7 @@ public class IdentityService : IIdentityService
         if (principal == null || principal.Identity == null)
             return null;
 
-        var user = _userManager.FindByNameAsync(principal.Identity.Name!).Result;
+        var user = await _userManager.FindByNameAsync(principal.Identity.Name!);
 
         if (user == null)
             return null;
@@ -51,7 +51,7 @@ public class IdentityService : IIdentityService
         if (user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTimeOffset.UtcNow)
             return null;
 
-        var roles = _userManager.GetRolesAsync(user).Result;
+        var roles = await _userManager.GetRolesAsync(user);
         var newAccessToken = _tokenService.GenerateAccessToken(user, roles);
         var newRefreshToken = _tokenService.GenerateRefreshToken();
 
