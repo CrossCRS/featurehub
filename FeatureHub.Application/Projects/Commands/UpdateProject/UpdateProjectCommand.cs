@@ -58,8 +58,6 @@ public class UpdateProjectCommandHandler : RequestHandlerAsync<UpdateProjectComm
             project.IsActive = command.IsActive.Value;
         }
 
-        project.UpdatedAt = DateTimeOffset.UtcNow;
-
         await _context.SaveChangesAsync(cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);

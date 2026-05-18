@@ -1,4 +1,5 @@
 ﻿using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Domain.Common;
 using FeatureHub.Domain.Entities;
 using FeatureHub.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -19,5 +20,24 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker
+            .Entries<BaseAuditableEntity>()
+            .Where(e => e.State is EntityState.Added or EntityState.Modified);
+
+        foreach (var entry in entries)
+        {
+            entry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
+
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedAt = entry.Entity.UpdatedAt;
+            }
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }
