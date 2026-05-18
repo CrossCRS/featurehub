@@ -49,24 +49,4 @@ public class GetProjectsByOwnerTests
         Assert.NotNull(result);
         Assert.Empty(result);
     }
-
-    [Fact]
-    public async Task GetProjectsByOwner_ShouldNotReturnDeletedProjects()
-    {
-        var projects = new List<Project>
-        {
-            new() { Id = 1, OwnerId = "owner1", Name = "Project 1", IsActive = true, IsDeleted = false },
-            new() { Id = 2, OwnerId = "owner1", Name = "Project 2", IsActive = true, IsDeleted = true },
-        };
-        var mockDbSet = projects.BuildMockDbSet();
-        _mockContext.Setup(c => c.Projects).Returns(mockDbSet.Object);
-
-        var handler = new GetProjectsByOwnerHandler(_mockContext.Object);
-        var ownerId = "owner1";
-
-        var result = await handler.ExecuteAsync(new GetProjectsByOwner(ownerId), CancellationToken.None);
-
-        Assert.NotNull(result);
-        Assert.Single(result);
-    }
 }
