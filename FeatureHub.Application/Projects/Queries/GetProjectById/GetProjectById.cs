@@ -54,7 +54,7 @@ public class GetProjectByIdHandler : QueryHandlerAsync<GetProjectById, ProjectDt
         if (project.OwnerId != query.UserId)
         {
             // TODO: Consider returning a 404 to avoid revealing the existence of the project?
-            throw new UnauthorizedException("You do not have access to this project.");
+            throw new ForbiddenAccessException("You do not have access to this project.");
         }
 
         return project;

@@ -38,13 +38,6 @@ public class AppExceptionHandler : IExceptionHandler
                 Type = "https://tools.ietf.org/html/rfc9110#section-15.5.2",
                 Detail = e.Message
             },
-            UnauthorizedException e => new ProblemDetails
-            {
-                Status = (int?)e.StatusCode,
-                Title = "Unauthorized",
-                Type = "https://tools.ietf.org/html/rfc9110#section-15.5.2",
-                Detail = e.Message
-            },
             ForbiddenAccessException e => new ProblemDetails
             {
                 Status = (int?)e.StatusCode,
