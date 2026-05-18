@@ -1,6 +1,7 @@
 ﻿using FeatureHub.Application.Common.Interfaces.Identity;
 using FeatureHub.Application.Common.Models.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace FeatureHub.Infrastructure.Identity;
 
@@ -8,11 +9,18 @@ public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IJwtTokenService<ApplicationUser> _tokenService;
+    private readonly IConfiguration _configuration;
 
-    public IdentityService(UserManager<ApplicationUser> userManager, IJwtTokenService<ApplicationUser> tokenService)
+    public IdentityService(UserManager<ApplicationUser> userManager, IJwtTokenService<ApplicationUser> tokenService, IConfiguration configuration)
     {
         _userManager = userManager;
         _tokenService = tokenService;
+        _configuration = configuration;
+    }
+
+    private int GetRefreshTokenExpirationMinutes()
+    {
+        return _configuration.GetSection("JwtSettings").GetValue<int>("RefreshTokenExpirationMinutes", 10080);
     }
 
     public async Task<LoginResponse?> LoginAsync(string username, string password)
@@ -30,7 +38,7 @@ public class IdentityService : IIdentityService
         var refreshToken = _tokenService.GenerateRefreshToken();
 
         user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTimeOffset.UtcNow.AddDays(7);
+        user.RefreshTokenExpiryTime = DateTimeOffset.UtcNow.AddMinutes(GetRefreshTokenExpirationMinutes());
         await _userManager.UpdateAsync(user);
 
         return new LoginResponse { AccessToken = accessToken, RefreshToken = refreshToken };
@@ -56,7 +64,7 @@ public class IdentityService : IIdentityService
         var newRefreshToken = _tokenService.GenerateRefreshToken();
 
         user.RefreshToken = newRefreshToken;
-        user.RefreshTokenExpiryTime = DateTimeOffset.UtcNow.AddDays(7);
+        user.RefreshTokenExpiryTime = DateTimeOffset.UtcNow.AddMinutes(GetRefreshTokenExpirationMinutes());
         await _userManager.UpdateAsync(user);
 
         return new LoginResponse { AccessToken = newAccessToken, RefreshToken = newRefreshToken };
