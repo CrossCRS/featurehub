@@ -45,7 +45,7 @@ public class UpdateProjectCommandHandler : RequestHandlerAsync<UpdateProjectComm
 
         if (project.OwnerId != command.UserId)
         {
-            throw new ForbiddenAccessException("You do not have permission to delete this project.");
+            throw new ForbiddenAccessException("You do not have permission to update this project.");
         }
 
         if (!string.IsNullOrEmpty(command.Name))
