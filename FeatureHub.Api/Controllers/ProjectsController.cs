@@ -56,8 +56,7 @@ public class ProjectsController : ControllerBase
 
         await _commandProcessor.SendAsync(command);
 
-        // TODO: CreatedAt
-        return NoContent();
+        return CreatedAtAction(nameof(GetProjectById), new { projectId = command.AddedProjectId }, null);
     }
 
     [HttpPatch("{projectId:int}")]
