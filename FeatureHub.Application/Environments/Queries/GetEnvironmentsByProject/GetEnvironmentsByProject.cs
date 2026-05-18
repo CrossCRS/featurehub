@@ -1,4 +1,5 @@
 using FeatureHub.Application.Common.Attributes;
+using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.DTOs.Environment;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
@@ -32,10 +33,7 @@ public class GetEnvironmentsByProjectHandler : QueryHandlerAsync<GetEnvironments
     [ValidateRequest(step: 1)]
     public override async Task<IEnumerable<EnvironmentDto>> ExecuteAsync(GetEnvironmentsByProject query, CancellationToken cancellationToken)
     {
-        var ownsProject = await _context.Projects
-            .AnyAsync(p => p.Id == query.ProjectId && p.OwnerId == query.UserId, cancellationToken);
-
-        if (!ownsProject)
+        if (!await ProjectAuthorization.UserCanAccessProjectAsync(_context, query.ProjectId, query.UserId, cancellationToken))
         {
             throw new NotFoundException(nameof(Project), query.ProjectId);
         }

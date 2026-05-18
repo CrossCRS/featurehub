@@ -1,4 +1,5 @@
 using FeatureHub.Application.Common.Attributes;
+using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.DTOs.Environment;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
@@ -59,10 +60,7 @@ public class GetEnvironmentByIdHandler : QueryHandlerAsync<GetEnvironmentById, E
             throw new NotFoundException(nameof(Domain.Entities.Environment), query.EnvironmentId);
         }
 
-        var ownsProject = await _context.Projects
-            .AnyAsync(p => p.Id == query.ProjectId && p.OwnerId == query.UserId, cancellationToken);
-
-        if (!ownsProject)
+        if (!await ProjectAuthorization.UserCanAccessProjectAsync(_context, query.ProjectId, query.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have access to this environment.");
         }
