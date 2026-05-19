@@ -46,7 +46,7 @@ public class GetProjectByIdTests
     }
 
     [Fact]
-    public async Task GetProjectById_ShouldThrowUnauthorizedException_WhenUserIsNotOwner()
+    public async Task GetProjectById_ShouldThrowForbiddenAccessException_WhenUserIsNotOwner()
     {
         var projects = new List<Project>
         {
@@ -58,6 +58,6 @@ public class GetProjectByIdTests
         var handler = new GetProjectByIdHandler(_mockContext.Object);
         var query = new GetProjectById("other-user", 1);
 
-        await Assert.ThrowsAsync<UnauthorizedException>(() => handler.ExecuteAsync(query, CancellationToken.None));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => handler.ExecuteAsync(query, CancellationToken.None));
     }
 }
