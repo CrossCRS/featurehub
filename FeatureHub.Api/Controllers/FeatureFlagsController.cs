@@ -11,7 +11,7 @@ namespace FeatureHub.Api.Controllers;
 [Authorize]
 [Route("api/Projects/{projectId:int}/Environments/{environmentId:int}/FeatureFlags")]
 [ApiController]
-public class FeatureFlagsController
+public class FeatureFlagsController : ControllerBase
 {
     private readonly ICurrentUserService _currentUserService;
     private readonly IQueryProcessor _queryProcessor;
