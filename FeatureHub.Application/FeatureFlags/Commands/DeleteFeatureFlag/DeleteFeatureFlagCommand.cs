@@ -11,14 +11,14 @@ public class DeleteFeatureFlagCommand : Command
 {
     public string UserId { get; }
     public int ProjectId { get; }
-    public int EnviromentId { get; }
+    public int EnvironmentId { get; }
     public int FeatureFlagId { get; }
 
-    public DeleteFeatureFlagCommand(string userId, int projectId, int enviromentId, int featureFlagId) : base(Guid.NewGuid())
+    public DeleteFeatureFlagCommand(string userId, int projectId, int environmentId, int featureFlagId) : base(Guid.NewGuid())
     {
         UserId = userId;
         ProjectId = projectId;
-        EnviromentId = enviromentId;
+        EnvironmentId = environmentId;
         FeatureFlagId = featureFlagId;
     }
 }
@@ -37,7 +37,7 @@ public class DeleteFeatureFlagCommandHandler : RequestHandlerAsync<DeleteFeature
     {
         var featureFlag = await _context.FeatureFlags
             .Include(ff => ff.Environment)
-            .SingleOrDefaultAsync(ff => ff.Id == command.FeatureFlagId && ff.EnvironmentId == command.EnviromentId, cancellationToken);
+            .SingleOrDefaultAsync(ff => ff.Id == command.FeatureFlagId && ff.EnvironmentId == command.EnvironmentId, cancellationToken);
 
         if (featureFlag == null || featureFlag.Environment!.ProjectId != command.ProjectId)
         {
