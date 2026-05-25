@@ -66,7 +66,7 @@ public class UpdateFeatureFlagCommandHandler : RequestHandlerAsync<UpdateFeature
 
         if (command.Description != null)
         {
-            featureFlag.Description = command.Description;
+            featureFlag.Description = command.Description.Length == 0 ? null : command.Description;
         }
 
         if (command.Value.HasValue)
@@ -76,7 +76,7 @@ public class UpdateFeatureFlagCommandHandler : RequestHandlerAsync<UpdateFeature
 
         if (command.Data != null)
         {
-            featureFlag.Data = command.Data;
+            featureFlag.Data = command.Data.Length == 0 ? null : command.Data;
         }
 
         if (command.IsActive.HasValue)
