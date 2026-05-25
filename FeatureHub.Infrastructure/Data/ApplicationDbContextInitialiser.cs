@@ -130,6 +130,15 @@ public class ApplicationDbContextInitialiser
             _context.Environments.Add(new Domain.Entities.Environment { ProjectId = demoProject.Id, Name = "Demo Environment 1", Token = "123e4567e89b12d3a456426614174000" });
         }
 
+        var demoEnvironment = _context.Environments.FirstOrDefault(e => e.Name == "Demo Environment 1");
+
+        if (demoEnvironment != null && !_context.FeatureFlags.Any(f => f.EnvironmentId == demoEnvironment.Id))
+        {
+            _context.FeatureFlags.Add(new FeatureFlag { EnvironmentId = demoEnvironment.Id, Name = "demo_feature_flag_1", Value = true });
+            _context.FeatureFlags.Add(new FeatureFlag { EnvironmentId = demoEnvironment.Id, Name = "demo_feature_flag_2", Value = false });
+            _context.FeatureFlags.Add(new FeatureFlag { EnvironmentId = demoEnvironment.Id, Name = "demo_feature_flag_3", Value = true, Data = "{ \"data\": \"some data here\" }" });
+        }
+
         await _context.SaveChangesAsync();
     }
 }

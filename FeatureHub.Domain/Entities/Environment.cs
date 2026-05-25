@@ -11,4 +11,6 @@ public class Environment : BaseAuditableEntity
 
     public required int ProjectId { get; set; }
     public Project? Project { get; set; }
+
+    public ICollection<FeatureFlag> FeatureFlags { get; set; } = [];
 }

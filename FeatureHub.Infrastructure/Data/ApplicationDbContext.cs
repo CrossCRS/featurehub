@@ -11,6 +11,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 {
     public DbSet<Domain.Entities.Project> Projects => Set<Domain.Entities.Project>();
     public DbSet<Domain.Entities.Environment> Environments => Set<Domain.Entities.Environment>();
+    public DbSet<Domain.Entities.FeatureFlag> FeatureFlags => Set<Domain.Entities.FeatureFlag>();
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
