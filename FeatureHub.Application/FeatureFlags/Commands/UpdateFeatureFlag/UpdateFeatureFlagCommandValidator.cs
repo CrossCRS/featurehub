@@ -16,6 +16,7 @@ public class UpdateFeatureFlagCommandValidator : AbstractValidator<UpdateFeature
             .GreaterThan(0).WithMessage("Feature flag ID must be greater than 0.");
 
         RuleFor(x => x.Name)
+            .Matches(@"^[a-zA-Z0-9_\-]+$").WithMessage("Feature flag name can only contain letters, numbers, underscores, and hyphens.")
             .MaximumLength(100).WithMessage("Feature flag name must not exceed 100 characters.");
 
         RuleFor(x => x.Description)

@@ -14,6 +14,7 @@ public class CreateFeatureFlagCommandValidator : AbstractValidator<CreateFeature
 
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Feature flag name is required.")
+            .Matches(@"^[a-zA-Z0-9_\-]+$").WithMessage("Feature flag name can only contain letters, numbers, underscores, and hyphens.")
             .MaximumLength(100).WithMessage("Feature flag name must not exceed 100 characters.");
 
         RuleFor(x => x.Description)
