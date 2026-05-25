@@ -19,6 +19,9 @@ public class FeatureFlagConfiguration : IEntityTypeConfiguration<Domain.Entities
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.HasIndex(f => new { f.Name, f.EnvironmentId })
+            .IsUnique();
+
         builder.Property(f => f.Description)
             .HasMaxLength(500);
 
