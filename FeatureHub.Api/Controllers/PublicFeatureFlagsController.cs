@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FeatureHub.Application.FeatureFlags.Queries.GetPublicFeatureFlags;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Darker;
 
@@ -19,6 +20,9 @@ public class PublicFeatureFlagsController : ControllerBase
     [HttpGet("{environmentToken}")]
     public async Task<IActionResult> GetPublicFeatureFlags([FromRoute] string environmentToken, [FromQuery] string? clientHash)
     {
-        throw new NotImplementedException();
+        var query = new GetPublicFeatureFlags(environmentToken, clientHash);
+        var featureFlags = await _queryProcessor.ExecuteAsync(query);
+
+        return Ok(featureFlags);
     }
 }
