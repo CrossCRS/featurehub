@@ -31,23 +31,25 @@ public class GetPublicFeatureFlagsHandler : QueryHandlerAsync<GetPublicFeatureFl
     [ValidateRequest(step: 1)]
     public override async Task<IEnumerable<PublicFeatureFlagDto>> ExecuteAsync(GetPublicFeatureFlags query, CancellationToken cancellationToken)
     {
-        var environment = _context.Environments
-            .Where(e => e.Token == query.EnvironmentToken)
+        var environment = await _context.Environments
+            .Where(e => e.Token == query.EnvironmentToken && e.IsActive)
             .Include(e => e.FeatureFlags)
             .AsNoTracking()
-            .FirstOrDefault();
+            .FirstOrDefaultAsync(cancellationToken);
 
         if (environment == null)
         {
             throw new NotFoundException(nameof(Environment), query.EnvironmentToken);
         }
 
-        var featureFlags = environment.FeatureFlags.Select(ff => new PublicFeatureFlagDto
-        {
-            Name = ff.Name,
-            Value = ff.Value, // TODO: Implement targeting rules and percentage rollouts based on the ClientHash
-            Data = ff.Data
-        }).ToList();
+        var featureFlags = environment.FeatureFlags
+            .Where(ff => ff.IsActive)
+            .Select(ff => new PublicFeatureFlagDto
+            {
+                Name = ff.Name,
+                Value = ff.Value, // TODO: Implement targeting rules and percentage rollouts based on the ClientHash
+                Data = ff.Data
+            }).ToList();
 
         return featureFlags;
     }
