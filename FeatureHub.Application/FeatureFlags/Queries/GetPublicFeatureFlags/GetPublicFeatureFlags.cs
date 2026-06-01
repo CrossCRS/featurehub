@@ -1,5 +1,6 @@
 ﻿using FeatureHub.Application.Common.Attributes;
 using FeatureHub.Application.Common.DTOs.FeatureFlag;
+using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Darker;
@@ -38,7 +39,7 @@ public class GetPublicFeatureFlagsHandler : QueryHandlerAsync<GetPublicFeatureFl
 
         if (environment == null)
         {
-            throw new ArgumentException("Invalid environment token.");
+            throw new NotFoundException(nameof(Environment), query.EnvironmentToken);
         }
 
         var featureFlags = environment.FeatureFlags.Select(ff => new PublicFeatureFlagDto
