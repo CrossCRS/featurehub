@@ -1,5 +1,6 @@
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using FeatureHub.Application.Projects.Commands.DeleteProject;
 using FeatureHub.Domain.Entities;
 using MockQueryable.Moq;
@@ -10,9 +11,10 @@ namespace FeatureHub.Application.Tests.Projects.Commands;
 public class DeleteProjectCommandTests
 {
     private readonly Mock<IApplicationDbContext> _mockContext = new();
+    private readonly Mock<IProjectAuthorization> _mockProjectAuthorization = new();
 
     [Fact]
-    public async Task DeleteProject_ShouldSetIsDeleted_WhenProjectExistsAndUserIsOwner()
+    public async Task DeleteProject_ShouldSetIsDeleted_WhenProjectExistsAndUserHasAccess()
     {
         var projects = new List<Project>
         {
@@ -20,8 +22,9 @@ public class DeleteProjectCommandTests
         };
         var mockDbSet = projects.BuildMockDbSet();
         _mockContext.Setup(c => c.Projects).Returns(mockDbSet.Object);
+        _mockProjectAuthorization.Setup(a => a.UserCanModifyProjectAsync(1, "owner1", It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
-        var handler = new DeleteProjectCommandHandler(_mockContext.Object);
+        var handler = new DeleteProjectCommandHandler(_mockContext.Object, _mockProjectAuthorization.Object);
         var command = new DeleteProjectCommand("owner1", 1);
 
         await handler.HandleAsync(command);
@@ -37,14 +40,14 @@ public class DeleteProjectCommandTests
         var mockDbSet = projects.BuildMockDbSet();
         _mockContext.Setup(c => c.Projects).Returns(mockDbSet.Object);
 
-        var handler = new DeleteProjectCommandHandler(_mockContext.Object);
+        var handler = new DeleteProjectCommandHandler(_mockContext.Object, _mockProjectAuthorization.Object);
         var command = new DeleteProjectCommand("owner1", 999);
 
         await Assert.ThrowsAsync<NotFoundException>(() => handler.HandleAsync(command));
     }
 
     [Fact]
-    public async Task DeleteProject_ShouldThrowForbiddenAccessException_WhenUserIsNotOwner()
+    public async Task DeleteProject_ShouldThrowForbiddenAccessException_WhenUserHasNoAccess()
     {
         var projects = new List<Project>
         {
@@ -52,8 +55,9 @@ public class DeleteProjectCommandTests
         };
         var mockDbSet = projects.BuildMockDbSet();
         _mockContext.Setup(c => c.Projects).Returns(mockDbSet.Object);
+        _mockProjectAuthorization.Setup(a => a.UserCanModifyProjectAsync(1, "other-user", It.IsAny<CancellationToken>())).ReturnsAsync(false);
 
-        var handler = new DeleteProjectCommandHandler(_mockContext.Object);
+        var handler = new DeleteProjectCommandHandler(_mockContext.Object, _mockProjectAuthorization.Object);
         var command = new DeleteProjectCommand("other-user", 1);
 
         await Assert.ThrowsAsync<ForbiddenAccessException>(() => handler.HandleAsync(command));

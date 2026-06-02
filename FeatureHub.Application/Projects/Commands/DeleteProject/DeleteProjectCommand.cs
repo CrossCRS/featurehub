@@ -1,7 +1,7 @@
 ﻿using FeatureHub.Application.Common.Attributes;
-using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using FeatureHub.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Brighter;
@@ -23,10 +23,12 @@ public class DeleteProjectCommand : Command
 public class DeleteProjectCommandHandler : RequestHandlerAsync<DeleteProjectCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IProjectAuthorization _projectAuthorization;
 
-    public DeleteProjectCommandHandler(IApplicationDbContext context)
+    public DeleteProjectCommandHandler(IApplicationDbContext context, IProjectAuthorization projectAuthorization)
     {
         _context = context;
+        _projectAuthorization = projectAuthorization;
     }
 
     [ValidateRequest(step: 1)]
@@ -39,7 +41,7 @@ public class DeleteProjectCommandHandler : RequestHandlerAsync<DeleteProjectComm
             throw new NotFoundException(nameof(Project), command.ProjectId);
         }
 
-        if (!await ProjectAuthorization.UserCanModifyProjectAsync(_context, command.ProjectId, command.UserId, cancellationToken))
+        if (!await _projectAuthorization.UserCanModifyProjectAsync(command.ProjectId, command.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have permission to delete this project.");
         }

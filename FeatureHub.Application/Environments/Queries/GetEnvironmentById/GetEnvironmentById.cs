@@ -1,8 +1,8 @@
 using FeatureHub.Application.Common.Attributes;
-using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.DTOs.Environment;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using FeatureHub.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Darker;
@@ -26,10 +26,12 @@ public class GetEnvironmentById : IQuery<EnvironmentDto>
 public class GetEnvironmentByIdHandler : QueryHandlerAsync<GetEnvironmentById, EnvironmentDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IProjectAuthorization _projectAuthorization;
 
-    public GetEnvironmentByIdHandler(IApplicationDbContext context)
+    public GetEnvironmentByIdHandler(IApplicationDbContext context, IProjectAuthorization projectAuthorization)
     {
         _context = context;
+        _projectAuthorization = projectAuthorization;
     }
 
     [ValidateRequest(step: 1)]
@@ -60,7 +62,7 @@ public class GetEnvironmentByIdHandler : QueryHandlerAsync<GetEnvironmentById, E
             throw new NotFoundException(nameof(Domain.Entities.Environment), query.EnvironmentId);
         }
 
-        if (!await ProjectAuthorization.UserCanAccessProjectAsync(_context, query.ProjectId, query.UserId, cancellationToken))
+        if (!await _projectAuthorization.UserCanAccessProjectAsync(query.ProjectId, query.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have access to this environment.");
         }

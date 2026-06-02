@@ -1,7 +1,7 @@
 using FeatureHub.Application.Common.Attributes;
-using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using Paramore.Brighter;
 
 namespace FeatureHub.Application.Environments.Commands.CreateEnvironment;
@@ -24,16 +24,18 @@ public class CreateEnvironmentCommand : Command
 public class CreateEnvironmentCommandHandler : RequestHandlerAsync<CreateEnvironmentCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IProjectAuthorization _projectAuthorization;
 
-    public CreateEnvironmentCommandHandler(IApplicationDbContext context)
+    public CreateEnvironmentCommandHandler(IApplicationDbContext context, IProjectAuthorization projectAuthorization)
     {
         _context = context;
+        _projectAuthorization = projectAuthorization;
     }
 
     [ValidateRequest(step: 1)]
     public override async Task<CreateEnvironmentCommand> HandleAsync(CreateEnvironmentCommand command, CancellationToken cancellationToken = default)
     {
-        if (!await ProjectAuthorization.UserCanModifyProjectAsync(_context, command.ProjectId, command.UserId, cancellationToken))
+        if (!await _projectAuthorization.UserCanModifyProjectAsync(command.ProjectId, command.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have permission to modify this environment.");
         }

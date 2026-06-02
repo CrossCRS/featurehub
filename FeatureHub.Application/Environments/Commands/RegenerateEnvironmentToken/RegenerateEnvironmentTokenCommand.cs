@@ -1,7 +1,7 @@
 using FeatureHub.Application.Common.Attributes;
-using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Brighter;
 
@@ -25,10 +25,12 @@ public class RegenerateEnvironmentTokenCommand : Command
 public class RegenerateEnvironmentTokenCommandHandler : RequestHandlerAsync<RegenerateEnvironmentTokenCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IProjectAuthorization _projectAuthorization;
 
-    public RegenerateEnvironmentTokenCommandHandler(IApplicationDbContext context)
+    public RegenerateEnvironmentTokenCommandHandler(IApplicationDbContext context, IProjectAuthorization projectAuthorization)
     {
         _context = context;
+        _projectAuthorization = projectAuthorization;
     }
 
     [ValidateRequest(step: 1)]
@@ -42,7 +44,7 @@ public class RegenerateEnvironmentTokenCommandHandler : RequestHandlerAsync<Rege
             throw new NotFoundException(nameof(Domain.Entities.Environment), command.EnvironmentId);
         }
 
-        if (!await ProjectAuthorization.UserCanModifyProjectAsync(_context, environment.ProjectId, command.UserId, cancellationToken))
+        if (!await _projectAuthorization.UserCanModifyProjectAsync(environment.ProjectId, command.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have permission to refresh this environment's token.");
         }

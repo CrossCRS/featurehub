@@ -1,20 +1,28 @@
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace FeatureHub.Application.Common.Authorization;
 
-public static class ProjectAuthorization
+public class ProjectAuthorization : IProjectAuthorization
 {
-    public static async Task<bool> UserCanAccessProjectAsync(IApplicationDbContext context, int projectId, string userId, CancellationToken cancellationToken = default)
+    private readonly IApplicationDbContext _context;
+
+    public ProjectAuthorization(IApplicationDbContext context)
     {
-        return await context.Projects
+        _context = context;
+    }
+
+    public async Task<bool> UserCanAccessProjectAsync(int projectId, string userId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Projects
             .AnyAsync(p => p.Id == projectId && p.OwnerId == userId, cancellationToken);
     }
 
-    public static async Task<bool> UserCanModifyProjectAsync(IApplicationDbContext context, int projectId, string userId, CancellationToken cancellationToken = default)
+    public async Task<bool> UserCanModifyProjectAsync(int projectId, string userId, CancellationToken cancellationToken = default)
     {
         // For now, only the project owner can modify the project.
         // Could add permissions later.
-        return await UserCanAccessProjectAsync(context, projectId, userId, cancellationToken);
+        return await UserCanAccessProjectAsync(projectId, userId, cancellationToken);
     }
 }

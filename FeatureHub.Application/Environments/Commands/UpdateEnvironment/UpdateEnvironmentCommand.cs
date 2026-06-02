@@ -1,7 +1,7 @@
 using FeatureHub.Application.Common.Attributes;
-using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Brighter;
 
@@ -28,10 +28,12 @@ public class UpdateEnvironmentCommand : Command
 public class UpdateEnvironmentCommandHandler : RequestHandlerAsync<UpdateEnvironmentCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IProjectAuthorization _projectAuthorization;
 
-    public UpdateEnvironmentCommandHandler(IApplicationDbContext context)
+    public UpdateEnvironmentCommandHandler(IApplicationDbContext context, IProjectAuthorization projectAuthorization)
     {
         _context = context;
+        _projectAuthorization = projectAuthorization;
     }
 
     [ValidateRequest(step: 1)]
@@ -45,7 +47,7 @@ public class UpdateEnvironmentCommandHandler : RequestHandlerAsync<UpdateEnviron
             throw new NotFoundException(nameof(Domain.Entities.Environment), command.EnvironmentId);
         }
 
-        if (!await ProjectAuthorization.UserCanModifyProjectAsync(_context, environment.ProjectId, command.UserId, cancellationToken))
+        if (!await _projectAuthorization.UserCanModifyProjectAsync(environment.ProjectId, command.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have permission to update this environment.");
         }

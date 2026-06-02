@@ -1,8 +1,8 @@
 ﻿using FeatureHub.Application.Common.Attributes;
-using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.DTOs.Project;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using FeatureHub.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Darker;
@@ -24,10 +24,12 @@ public class GetProjectById : IQuery<ProjectDto>
 public class GetProjectByIdHandler : QueryHandlerAsync<GetProjectById, ProjectDto>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IProjectAuthorization _projectAuthorization;
 
-    public GetProjectByIdHandler(IApplicationDbContext context)
+    public GetProjectByIdHandler(IApplicationDbContext context, IProjectAuthorization projectAuthorization)
     {
         _context = context;
+        _projectAuthorization = projectAuthorization;
     }
 
     [ValidateRequest(step: 1)]
@@ -52,7 +54,7 @@ public class GetProjectByIdHandler : QueryHandlerAsync<GetProjectById, ProjectDt
             throw new NotFoundException(nameof(Project), query.Id);
         }
 
-        if (!await ProjectAuthorization.UserCanAccessProjectAsync(_context, query.Id, query.UserId, cancellationToken))
+        if (!await _projectAuthorization.UserCanAccessProjectAsync(query.Id, query.UserId, cancellationToken))
         {
             // TODO: Consider returning a 404 to avoid revealing the existence of the project?
             throw new ForbiddenAccessException("You do not have access to this project.");
