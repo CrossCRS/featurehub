@@ -43,7 +43,7 @@ public class GetPublicFeatureFlagsHandler : QueryHandlerAsync<GetPublicFeatureFl
         }
 
         var featureFlags = environment.FeatureFlags
-            .Where(ff => ff.IsActive && (ff.Value || ff.Data != null))
+            .Where(ff => ff.IsActive && (ff.Value || ff.Data != null)) // TODO: Consider if we want to return data for false flags?
             .Select(ff => new PublicFeatureFlagDto
             {
                 Name = ff.Name,
