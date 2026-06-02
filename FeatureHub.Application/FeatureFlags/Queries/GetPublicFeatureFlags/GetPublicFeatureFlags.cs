@@ -43,7 +43,7 @@ public class GetPublicFeatureFlagsHandler : QueryHandlerAsync<GetPublicFeatureFl
         }
 
         var featureFlags = environment.FeatureFlags
-            .Where(ff => ff.IsActive)
+            .Where(ff => ff.IsActive && (ff.Value || ff.Data != null))
             .Select(ff => new PublicFeatureFlagDto
             {
                 Name = ff.Name,
