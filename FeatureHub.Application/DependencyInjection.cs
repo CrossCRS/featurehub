@@ -1,4 +1,6 @@
-﻿using FeatureHub.Application.Common.Middleware;
+﻿using FeatureHub.Application.Common.Authorization;
+using FeatureHub.Application.Common.Interfaces.Authorization;
+using FeatureHub.Application.Common.Middleware;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +15,8 @@ public static class DependencyInjection
 {
     public static void AddApplicationServices(this IHostApplicationBuilder builder)
     {
+        builder.Services.AddScoped<IProjectAuthorization, ProjectAuthorization>();
+
         builder.Services.AddValidatorsFromAssemblies([Assembly.GetExecutingAssembly()]);
 
         builder.Services.AddTransient(typeof(ValidationHandler<>));
