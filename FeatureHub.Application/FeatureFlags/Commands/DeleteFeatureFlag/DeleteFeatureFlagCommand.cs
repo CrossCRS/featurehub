@@ -1,7 +1,7 @@
 using FeatureHub.Application.Common.Attributes;
-using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Brighter;
 
@@ -26,10 +26,12 @@ public class DeleteFeatureFlagCommand : Command
 public class DeleteFeatureFlagCommandHandler : RequestHandlerAsync<DeleteFeatureFlagCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IProjectAuthorization _projectAuthorization;
 
-    public DeleteFeatureFlagCommandHandler(IApplicationDbContext context)
+    public DeleteFeatureFlagCommandHandler(IApplicationDbContext context, IProjectAuthorization projectAuthorization)
     {
         _context = context;
+        _projectAuthorization = projectAuthorization;
     }
 
     [ValidateRequest(step: 1)]
@@ -44,7 +46,7 @@ public class DeleteFeatureFlagCommandHandler : RequestHandlerAsync<DeleteFeature
             throw new NotFoundException(nameof(Domain.Entities.FeatureFlag), command.FeatureFlagId);
         }
 
-        if (!await ProjectAuthorization.UserCanModifyProjectAsync(_context, featureFlag.Environment!.ProjectId, command.UserId, cancellationToken))
+        if (!await _projectAuthorization.UserCanModifyProjectAsync(featureFlag.Environment!.ProjectId, command.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have permission to delete this feature flag.");
         }

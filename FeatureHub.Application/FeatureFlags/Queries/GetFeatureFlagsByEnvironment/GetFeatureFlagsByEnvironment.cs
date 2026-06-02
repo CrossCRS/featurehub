@@ -1,8 +1,8 @@
 ﻿using FeatureHub.Application.Common.Attributes;
-using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.DTOs.FeatureFlag;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Darker;
 
@@ -25,16 +25,18 @@ public class GetFeatureFlagsByEnvironment : IQuery<IEnumerable<FeatureFlagDto>>
 public class GetFeatureFlagsByEnvironmentHandler : QueryHandlerAsync<GetFeatureFlagsByEnvironment, IEnumerable<FeatureFlagDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IProjectAuthorization _projectAuthorization;
 
-    public GetFeatureFlagsByEnvironmentHandler(IApplicationDbContext context)
+    public GetFeatureFlagsByEnvironmentHandler(IApplicationDbContext context, IProjectAuthorization projectAuthorization)
     {
         _context = context;
+        _projectAuthorization = projectAuthorization;
     }
 
     [ValidateRequest(step: 1)]
     public override async Task<IEnumerable<FeatureFlagDto>> ExecuteAsync(GetFeatureFlagsByEnvironment query, CancellationToken cancellationToken)
     {
-        if (!await ProjectAuthorization.UserCanAccessProjectAsync(_context, query.ProjectId, query.UserId, cancellationToken))
+        if (!await _projectAuthorization.UserCanAccessProjectAsync(query.ProjectId, query.UserId, cancellationToken))
         {
             throw new ForbiddenAccessException("You do not have access to this project.");
         }

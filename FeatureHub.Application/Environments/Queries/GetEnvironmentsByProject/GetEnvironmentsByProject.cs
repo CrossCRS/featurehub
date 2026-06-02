@@ -1,8 +1,8 @@
 using FeatureHub.Application.Common.Attributes;
-using FeatureHub.Application.Common.Authorization;
 using FeatureHub.Application.Common.DTOs.Environment;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
+using FeatureHub.Application.Common.Interfaces.Authorization;
 using FeatureHub.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Darker;
@@ -24,16 +24,18 @@ public class GetEnvironmentsByProject : IQuery<IEnumerable<EnvironmentDto>>
 public class GetEnvironmentsByProjectHandler : QueryHandlerAsync<GetEnvironmentsByProject, IEnumerable<EnvironmentDto>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IProjectAuthorization _projectAuthorization;
 
-    public GetEnvironmentsByProjectHandler(IApplicationDbContext context)
+    public GetEnvironmentsByProjectHandler(IApplicationDbContext context, IProjectAuthorization projectAuthorization)
     {
         _context = context;
+        _projectAuthorization = projectAuthorization;
     }
 
     [ValidateRequest(step: 1)]
     public override async Task<IEnumerable<EnvironmentDto>> ExecuteAsync(GetEnvironmentsByProject query, CancellationToken cancellationToken)
     {
-        if (!await ProjectAuthorization.UserCanAccessProjectAsync(_context, query.ProjectId, query.UserId, cancellationToken))
+        if (!await _projectAuthorization.UserCanAccessProjectAsync(query.ProjectId, query.UserId, cancellationToken))
         {
             throw new NotFoundException(nameof(Project), query.ProjectId);
         }
