@@ -1,4 +1,5 @@
-﻿using FeatureHub.Application.FeatureFlags.Queries.GetPublicFeatureFlags;
+﻿using FeatureHub.Application.Common.DTOs.FeatureFlag;
+using FeatureHub.Application.FeatureFlags.Queries.GetPublicFeatureFlags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Darker;
@@ -18,11 +19,11 @@ public class PublicFeatureFlagsController : ControllerBase
     }
 
     [HttpGet("{environmentToken}")]
-    public async Task<IActionResult> GetPublicFeatureFlags([FromRoute] string environmentToken, [FromQuery] string? clientHash)
+    public async Task<IEnumerable<PublicFeatureFlagDto>> GetPublicFeatureFlags([FromRoute] string environmentToken, [FromQuery] string? clientHash)
     {
         var query = new GetPublicFeatureFlags(environmentToken, clientHash);
         var featureFlags = await _queryProcessor.ExecuteAsync(query);
 
-        return Ok(featureFlags);
+        return featureFlags;
     }
 }
