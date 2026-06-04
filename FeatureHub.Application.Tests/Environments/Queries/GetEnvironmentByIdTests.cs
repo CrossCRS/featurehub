@@ -60,4 +60,21 @@ public class GetEnvironmentByIdTests
 
         await Assert.ThrowsAsync<FeatureHub.Application.Common.Exceptions.ForbiddenAccessException>(() => handler.ExecuteAsync(query, CancellationToken.None));
     }
+
+    [Fact]
+    public async Task GetEnvironmentById_ShouldThrowNotFoundException_WhenEnvironmentDoesNotBelongToProject()
+    {
+        var environments = new List<Domain.Entities.Environment>
+        {
+            new() { Id = 1, Name = "Environment 1", ProjectId = 1, Token = "deadbeef000000000000000000000042", IsActive = true, IsDeleted = false },
+        };
+        var mockDbSet = environments.BuildMockDbSet();
+        _mockContext.Setup(c => c.Environments).Returns(mockDbSet.Object);
+        _mockProjectAuthorization.Setup(a => a.UserCanAccessProjectAsync(2, "owner1", It.IsAny<CancellationToken>())).ReturnsAsync(true);
+
+        var handler = new GetEnvironmentByIdHandler(_mockContext.Object, _mockProjectAuthorization.Object);
+        var query = new GetEnvironmentById("owner1", 2, 1);
+
+        await Assert.ThrowsAsync<FeatureHub.Application.Common.Exceptions.NotFoundException>(() => handler.ExecuteAsync(query, CancellationToken.None));
+    }
 }
