@@ -3,7 +3,6 @@ using FeatureHub.Application.Common.DTOs.Environment;
 using FeatureHub.Application.Common.Exceptions;
 using FeatureHub.Application.Common.Interfaces;
 using FeatureHub.Application.Common.Interfaces.Authorization;
-using FeatureHub.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Paramore.Darker;
 
@@ -37,7 +36,7 @@ public class GetEnvironmentsByProjectHandler : QueryHandlerAsync<GetEnvironments
     {
         if (!await _projectAuthorization.UserCanAccessProjectAsync(query.ProjectId, query.UserId, cancellationToken))
         {
-            throw new NotFoundException(nameof(Project), query.ProjectId);
+            throw new ForbiddenAccessException("You do not have access to this project.");
         }
 
         var environments = await _context.Environments
