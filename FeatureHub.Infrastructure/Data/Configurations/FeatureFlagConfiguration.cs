@@ -8,7 +8,7 @@ public class FeatureFlagConfiguration : IEntityTypeConfiguration<Domain.Entities
     public void Configure(EntityTypeBuilder<Domain.Entities.FeatureFlag> builder)
     {
         // Exclude soft-deleted feature flags
-        builder.HasQueryFilter(f => !f.IsDeleted);
+        builder.HasQueryFilter("SoftDeleteFilter", f => !f.IsDeleted);
 
         builder.HasOne(f => f.Environment)
             .WithMany(e => e.FeatureFlags)

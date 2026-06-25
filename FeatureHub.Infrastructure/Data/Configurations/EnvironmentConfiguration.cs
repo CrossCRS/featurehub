@@ -1,5 +1,4 @@
-﻿using FeatureHub.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FeatureHub.Infrastructure.Data.Configurations;
@@ -9,7 +8,7 @@ public class EnvironmentConfiguration : IEntityTypeConfiguration<Domain.Entities
     public void Configure(EntityTypeBuilder<Domain.Entities.Environment> builder)
     {
         // Exclude soft-deleted environments
-        builder.HasQueryFilter(e => !e.IsDeleted);
+        builder.HasQueryFilter("SoftDeleteFilter", e => !e.IsDeleted);
 
         builder.HasOne(e => e.Project)
             .WithMany(p => p.Environments)
