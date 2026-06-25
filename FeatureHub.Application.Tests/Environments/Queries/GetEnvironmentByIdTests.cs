@@ -1,4 +1,5 @@
-﻿using FeatureHub.Application.Common.Interfaces;
+﻿using FeatureHub.Application.Common.Exceptions;
+using FeatureHub.Application.Common.Interfaces;
 using FeatureHub.Application.Common.Interfaces.Authorization;
 using FeatureHub.Application.Environments.Queries.GetEnvironmentById;
 using MockQueryable.Moq;
@@ -41,7 +42,7 @@ public class GetEnvironmentByIdTests
         var handler = new GetEnvironmentByIdHandler(_mockContext.Object, _mockProjectAuthorization.Object);
         var query = new GetEnvironmentById("owner1", 1, 999);
 
-        await Assert.ThrowsAsync<FeatureHub.Application.Common.Exceptions.NotFoundException>(() => handler.ExecuteAsync(query, CancellationToken.None));
+        await Assert.ThrowsAsync<NotFoundException>(() => handler.ExecuteAsync(query, CancellationToken.None));
     }
 
     [Fact]
@@ -58,7 +59,7 @@ public class GetEnvironmentByIdTests
         var handler = new GetEnvironmentByIdHandler(_mockContext.Object, _mockProjectAuthorization.Object);
         var query = new GetEnvironmentById("other-user", 1, 1);
 
-        await Assert.ThrowsAsync<FeatureHub.Application.Common.Exceptions.ForbiddenAccessException>(() => handler.ExecuteAsync(query, CancellationToken.None));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => handler.ExecuteAsync(query, CancellationToken.None));
     }
 
     [Fact]
@@ -75,6 +76,6 @@ public class GetEnvironmentByIdTests
         var handler = new GetEnvironmentByIdHandler(_mockContext.Object, _mockProjectAuthorization.Object);
         var query = new GetEnvironmentById("owner1", 2, 1);
 
-        await Assert.ThrowsAsync<FeatureHub.Application.Common.Exceptions.NotFoundException>(() => handler.ExecuteAsync(query, CancellationToken.None));
+        await Assert.ThrowsAsync<NotFoundException>(() => handler.ExecuteAsync(query, CancellationToken.None));
     }
 }

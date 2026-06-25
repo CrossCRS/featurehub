@@ -1,4 +1,5 @@
-﻿using FeatureHub.Application.Common.Interfaces;
+﻿using FeatureHub.Application.Common.Exceptions;
+using FeatureHub.Application.Common.Interfaces;
 using FeatureHub.Application.Common.Interfaces.Authorization;
 using FeatureHub.Application.Environments.Queries.GetEnvironmentsByProject;
 using MockQueryable.Moq;
@@ -47,7 +48,7 @@ public class GetEnvironmentsByProjectTests
         var handler = new GetEnvironmentsByProjectHandler(_mockContext.Object, _mockProjectAuthorization.Object);
         var query = new GetEnvironmentsByProject("other-user", 1);
 
-        await Assert.ThrowsAsync<FeatureHub.Application.Common.Exceptions.ForbiddenAccessException>(() => handler.ExecuteAsync(query, CancellationToken.None));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => handler.ExecuteAsync(query, CancellationToken.None));
     }
 
     [Fact]
