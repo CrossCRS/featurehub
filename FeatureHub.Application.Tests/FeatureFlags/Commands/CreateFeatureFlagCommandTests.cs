@@ -56,7 +56,7 @@ public class CreateFeatureFlagCommandTests
     }
 
     [Fact]
-    public async Task CreateFeatureFlag_ShouldThrowUnauthorizedAccessException_WhenUserHasNoAccess()
+    public async Task CreateFeatureFlag_ShouldThrowForbiddenAccessException_WhenUserHasNoAccess()
     {
         var environments = new List<FeatureHub.Domain.Entities.Environment>();
         var environmentsMockDbSet = environments.BuildMockDbSet();
@@ -70,6 +70,6 @@ public class CreateFeatureFlagCommandTests
         var handler = new CreateFeatureFlagCommandHandler(_mockContext.Object, _mockProjectAuthorization.Object);
         var command = new CreateFeatureFlagCommand("other-user", 1, 1, "new-flag", "Description", true, null);
 
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() => handler.HandleAsync(command));
+        await Assert.ThrowsAsync<ForbiddenAccessException>(() => handler.HandleAsync(command));
     }
 }

@@ -46,7 +46,7 @@ public class CreateFeatureFlagCommandHandler : RequestHandlerAsync<CreateFeature
     {
         if (!await _projectAuthorization.UserCanModifyProjectAsync(command.ProjectId, command.UserId, cancellationToken))
         {
-            throw new UnauthorizedAccessException("You do not have permission to modify this feature flag.");
+            throw new ForbiddenAccessException("You do not have permission to modify this feature flag.");
         }
 
         var environment = await _context.Environments
