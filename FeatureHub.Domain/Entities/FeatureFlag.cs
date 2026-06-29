@@ -13,4 +13,6 @@ public class FeatureFlag : BaseAuditableEntity
 
     public required int EnvironmentId { get; set; }
     public Environment? Environment { get; set; }
+
+    public ICollection<FeatureFlagRule> Rules { get; set; } = [];
 }

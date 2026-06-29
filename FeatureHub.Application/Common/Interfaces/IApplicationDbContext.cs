@@ -7,6 +7,7 @@ public interface IApplicationDbContext
     DbSet<Domain.Entities.Project> Projects { get; }
     DbSet<Domain.Entities.Environment> Environments { get; }
     DbSet<Domain.Entities.FeatureFlag> FeatureFlags { get; }
+    DbSet<Domain.Entities.FeatureFlagRule> FeatureFlagRules { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
